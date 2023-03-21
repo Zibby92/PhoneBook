@@ -1,8 +1,39 @@
+import javax.imageio.IIOException;
+import java.io.*;
 import java.util.*;
 
-public class Telebook {
+public class Telebook implements Serializable {
     Scanner scanner = new Scanner(System.in);
     private List<Contact> listOfContacts = new ArrayList<>();
+    String fileName = "saveFile";
+
+    void loadFile() {
+        try (
+                var fis = new FileInputStream(fileName);
+                var ois = new ObjectInputStream(fis);
+        ) {
+            listOfContacts = (List<Contact>) ois.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            System.err.println("Nie udało się odczytać pliku");
+            e.printStackTrace();
+        }
+    }
+    void saveFile(){
+        try (
+            var fs = new FileOutputStream(fileName);
+            var os = new ObjectOutputStream(fs);
+        ){
+            os.writeObject(listOfContacts);
+            System.out.println("udalo sie zapisac");
+            } catch (IIOException e){
+            System.err.println("nie udalo sie zapisac do pliku");
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     void temporaryAddContacts (){
         listOfContacts.add(new Contact("Robert","Krzyżanowski","123"));
@@ -23,6 +54,13 @@ public class Telebook {
             lastName = scanner.nextLine();
             System.out.println("Numer telefonu: ");
             number = scanner.nextLine();
+            if(name == null|| lastName == null || number == null){
+                throw new NullPointerException("Dane nie mogą być nullami");
+            }
+            if(name.isEmpty() || lastName.isEmpty() ||number.isEmpty()) {
+                throw  new InputMismatchException("Nieprawidlowo podane dane");
+            }
+
             temporaryContact = (new Contact(name, lastName, number));
         }while(isTheSame(temporaryContact));
         listOfContacts.add(temporaryContact);
@@ -74,7 +112,7 @@ public class Telebook {
         int temporaryContactNumber = scanner.nextInt();
         scanner.nextLine();
 
-        System.out.println("Napewno chcesz usunąć: " + temporaryContact.get(temporaryContactNumber -1));
+        System.out.println("Napewno chcesz usu4nąć: " + temporaryContact.get(temporaryContactNumber -1));
         System.out.println("Y/N?");
         String temporaryDecision = scanner.nextLine();
         if (temporaryDecision.equals("Y")) {
@@ -83,5 +121,21 @@ public class Telebook {
         for (Contact con :listOfContacts  ) {
             System.out.println(con);
         }
+    }
+
+    public Scanner getScanner() {
+        return scanner;
+    }
+
+    public void setScanner(Scanner scanner) {
+        this.scanner = scanner;
+    }
+
+    public List<Contact> getListOfContacts() {
+        return listOfContacts;
+    }
+
+    public void setListOfContacts(List<Contact> listOfContacts) {
+        this.listOfContacts = listOfContacts;
     }
 }

@@ -1,4 +1,6 @@
-public class Contact implements Comparable<Contact> {
+import java.io.Serializable;
+
+public class Contact implements Comparable<Contact>, Serializable {
     private String name;
     private String lastName;
     private String number;
